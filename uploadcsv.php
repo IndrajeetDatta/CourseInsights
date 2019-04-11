@@ -12,7 +12,11 @@
     $bio = $_SESSION['bio'];
     $courseID = $_SESSION['course_id'];
 
-    echo $courseID;
+    $chaptersUpdated = false;
+    $videosUpdated = false;
+    $problemsUpdated = false;
+    $discussionsUpdated = false;
+    $htmlsUpdated = false;
 
     if(isset($_POST["upload"]))
     {
@@ -43,7 +47,7 @@
 
                if($mysqli->query($sql_chapters))
                {
-                  echo "Chapters table is updated!";
+                  // echo "Chapters table is updated!";
                   $chaptersUpdated = true;
                }
      
@@ -63,7 +67,7 @@
               $sql_videos = "INSERT INTO videos(video_name, video_length, indx, course_id) "."VALUES ('$video_name', '$video_length', '$video_indx', '$courseID');";
                if($mysqli->query($sql_videos))
                {
-                  echo "Videos table is updated!";
+                  // echo "Videos table is updated!";
                   $videosUpdated = true;
                }
             
@@ -82,7 +86,7 @@
               $sql_problems = "INSERT INTO problems(problem_name, problem_type, indx, course_id) "."VALUES ('$problem_name', '$problem_type', '$problem_indx', '$courseID');";
                if($mysqli->query($sql_problems))
                {
-                  echo "Problems table is updated!";
+                  // echo "Problems table is updated!";
                   $problemsUpdated = true;
                }
 
@@ -102,7 +106,7 @@
 
                if($mysqli->query($sql_discussions))
                {
-                  echo "Discussions table is updated!";
+                  // echo "Discussions table is updated!";
                   $discussionsUpdated = true;
                }
 
@@ -127,7 +131,7 @@
 
                if($mysqli->query($sql_htmls))
                {
-                  echo "Htmls table is updated!";
+                  // echo "Htmls table is updated!";
                   $htmlsUpdated = true;
                }
             
@@ -135,12 +139,19 @@
          fclose($handle5);
       }
      
-       } 
+    } 
+      if($chaptersUpdated == true && $videosUpdated == true && $problemsUpdated == true && $discussionsUpdated == true && $htmlsUpdated == true)
+      {
+        $updateQuery = "UPDATE courses SET isUpdated='1' WHERE course_id='$courseID';";
+        $mysqli->query($updateQuery);       
+      }    
+      header("location: courseDash.php"); 
   }
   // if(isset($_GET["updation"]))
   // {
   //    $message = '<label class="text-success">Product Updation Done</label>';
   // }
-          header("location: courseDash.php"); 
+
+
 
 ?>

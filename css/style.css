@@ -20,6 +20,9 @@ a {
 a:hover {
   color: #179b77;
 }
+#piechart_3d{
+  width:80%;
+}
 .jumbotron
 {
   background: #1ab188;
@@ -30,6 +33,16 @@ a:hover {
   /*background: rgba(0,0,0,0.0);*/
   padding: 40px;
   max-width: 600px;
+  margin: 40px auto;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px 4px rgba(19, 35, 47, 0.3);
+}
+
+.form2 {
+  background: rgba(19, 35, 47, 0.9); 
+  /*background: rgba(0,0,0,0.0);*/
+  padding: 40px;
+  max-width: 85%;
   margin: 40px auto;
   border-radius: 4px;
   box-shadow: 0 4px 10px 4px rgba(19, 35, 47, 0.3);
