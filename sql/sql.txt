@@ -1,4 +1,4 @@
-CREATE DATABASE accounts;
+CREATE DATABASE user;
 
 CREATE TABLE `accounts`.`users` 
 (
@@ -11,3 +11,19 @@ CREATE TABLE `accounts`.`users`
     `active` BOOL NOT NULL DEFAULT 0,
 PRIMARY KEY (`id`) 
 );
+
+CREATE TABLE user(user_id INT NOT NULL AUTO_INCREMENT, 
+f_name VARCHAR(255) NOT NULL, l_name VARCHAR(255) NOT NULL, 
+email VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL,
+hash VARCHAR(255) NOT NULL, institution VARCHAR(255),
+title VARCHAR(255), bio TEXT, PRIMARY KEY (user_id));
+
+CREATE TABLE courses(course_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, course_name VARCHAR(255) NOT NULL, course_number VARCHAR(255) NOT NULL courseUpdated bool DEFAULT 0, user_id INT NOT NULL, FOREIGN KEY fk_user(user_id) REFERENCES user(user_id));
+
+CREATE TABLE chapters(chapter_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, chapter_name VARCHAR(255) NOT NULL, indx INT NOT NULL, course_id INT NOT NULL, FOREIGN KEY fk_course(course_id) REFERENCES courses(course_id));
+
+CREATE TABLE videos(video_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, video_name VARCHAR(255) NOT NULL, video_length INT NOT NULL, indx INT NOT NULL, course_id INT NOT NULL, FOREIGN KEY fk_course(course_id) REFERENCES courses(course_id));
+
+CREATE TABLE problems(problem_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, problem_name VARCHAR(255) NOT NULL, problem_type VARCHAR(255) NOT NULL, indx INT NOT NULL, course_id INT NOT NULL, FOREIGN KEY fk_course(course_id) REFERENCES courses(course_id));
+
+CREATE TABLE discussions(discussion_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, discussion_name VARCHAR(255) NOT NULL, indx INT NOT NULL, course_id INT NOT NULL, FOREIGN KEY fk_course(course_id) REFERENCES courses(course_id));

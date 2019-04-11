@@ -1,7 +1,7 @@
 <?php 
 /* Main page with two forms: sign up and log in */
-require 'db.php';
 session_start();
+require 'db.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -33,8 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 <body>
 
   <div class="jumbotron">
-   <h1 class="display-4"> Course Insights </h1>
+    <div class="form">
+      <h1 class="display-4"> Course Insights </h1>
     <p class="lead"> Visualize your course data ! </p>
+    </div>
+   
   </div>
 
   <div class="form">
@@ -112,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
             <label>
               Institute<span class="req">*</span>
             </label>
-            <input type="text"required autocomplete="off" name='institute'/>
+            <input type="text"required autocomplete="off" name='institution'/>
           </div>
 
           <div class="field-wrap">
