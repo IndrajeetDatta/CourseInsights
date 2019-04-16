@@ -54,11 +54,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
           
           <form action="index.php" method="post" autocomplete="off">
           
-            <div class="field-wrap">
-            <label>
-              Email Address<span class="req">*</span>
-            </label>
-            <input type="email" required autocomplete="off" name="email"/>
+          <div class="field-wrap">
+          <label>
+            Email Address<span class="req">*</span>
+          </label>
+          <input type="email" required autocomplete="off" name="email"/>
           </div>
           
           <div class="field-wrap">

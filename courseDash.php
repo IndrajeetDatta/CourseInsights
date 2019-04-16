@@ -16,6 +16,7 @@
 	$result = $mysqli->query("SELECT * FROM courses WHERE course_id='$courseID'");
 	$course = $result->fetch_assoc();
 	$isCourseUpdated = $course['isUpdated'];
+	$courseName = $course['course_name'];
 ?>
 
 <!DOCTYPE html>
@@ -66,6 +67,7 @@
         </ul>
     </div>
 </nav>
+<h1 style="color: black"> <?php echo $courseName ?> </h1>
 	<?php 
 		if($isCourseUpdated == 0)
 		{
@@ -148,7 +150,60 @@
 				array_push($result_array_discussions_count, $tmp_discussions_count);
 				array_push($result_array_htmls_count, $tmp_htmls_count);
 			}
+			
+			$array_multi_video_names = array();
+			$array_multi_video_lengths = array();
 
+			$array_multi_html_names = array();
+			$array_multi_pdf_pages = array();
+
+			for($n = 0; $n < $chapters_count; $n++)
+			{
+
+				$x1 = $result_array_chapters_indx[$n];
+			
+				$x2 = $result_array_chapters_indx[$n+1];
+			
+				$tmparray_video_names = array();
+				$tmparray_video_lengths = array();
+
+				$tmparray_html_names = array();
+				$tmparray_pdf_pages = array();
+
+				$queryObj_video_names = $mysqli->query("SELECT video_name FROM videos WHERE course_id = '$courseID' AND indx >= '$x1' AND indx < '$x2'");
+
+				$queryObj_video_lengths = $mysqli->query("SELECT video_length FROM videos WHERE course_id = '$courseID' AND indx >= '$x1' AND indx < '$x2'");
+				
+				$queryObj_html_names = $mysqli->query("SELECT html_name FROM htmls WHERE course_id = '$courseID' AND indx >= '$x1' AND indx < '$x2'");
+			
+				$queryObj_pdf_pages = $mysqli->query("SELECT pdf_pages FROM htmls WHERE course_id = '$courseID' AND indx >= '$x1' AND indx < '$x2'");
+				 
+				 while($obj_video_name = $queryObj_video_names->fetch_object())
+				 {
+				 	array_push($tmparray_video_names, $obj_video_name->video_name);
+				 } 
+				
+				while($obj_video_length = $queryObj_video_lengths->fetch_object())
+				 {
+				 	array_push($tmparray_video_lengths, $obj_video_length->video_length);
+				 } 
+
+				 while($obj_html_name = $queryObj_html_names->fetch_object())
+				 {
+				 	array_push($tmparray_html_names, $obj_html_name->html_name);
+				 } 
+
+				 while($obj_pdf_pages = $queryObj_pdf_pages->fetch_object())
+				 {
+				 	array_push($tmparray_pdf_pages, $obj_pdf_pages->pdf_pages);
+				 }
+				array_push($array_multi_video_names, $tmparray_video_names);
+				array_push($array_multi_video_lengths, $tmparray_video_lengths);
+				array_push($array_multi_html_names, $tmparray_html_names);
+				array_push($array_multi_pdf_pages, $tmparray_pdf_pages);
+			}
+			// echo "Size of Video Lengths Array: ".sizeof($array_multi_video_lengths);
+			// echo "Size of PDF Pages Array: ".sizeof($array_multi_pdf_pages);
 			// echo "Videos: ";
 			// for($n = 0; $n < sizeof($result_array_videos_count); $n++)
 			// {
@@ -305,44 +360,38 @@
      		
         </div>
           
-        <div id="visualizations" style="margin-left:30%";>   
-          	
-        	<div id="piechart_3d0"></div>
-        	<div id="piechart_3d1"></div>
-        	<div id="piechart_3d2"></div>
-        	<div id="piechart_3d3"></div>
-        	<div id="piechart_3d4"></div>
-        	<div id="piechart_3d5"></div>
-        	<div id="piechart_3d6"></div>
-        	<div id="piechart_3d7"></div>
-        	<div id="piechart_3d8"></div>
-        	<div id="piechart_3d9"></div>
-        	<div id="piechart_3d10"></div>
-        	<div id="piechart_3d11"></div>
-        	<div id="piechart_3d12"></div>
-        	<div id="piechart_3d13"></div>
-        	<div id="piechart_3d14"></div>
-        	<div id="piechart_3d15"></div>
-        	<div id="piechart_3d16"></div>
-        	<div id="piechart_3d17"></div>
-        	<div id="piechart_3d18"></div>
-        	<div id="piechart_3d19"></div>
-        	<div id="piechart_3d20"></div>
-        	<div id="piechart_3d21"></div>
-        	<div id="piechart_3d22"></div>
-        	<div id="piechart_3d23"></div>
-        	<div id="piechart_3d24"></div>
-        	<div id="piechart_3d25"></div>
-        	<div id="piechart_3d26"></div>
-        	<div id="piechart_3d27"></div>
-        	<div id="piechart_3d28"></div>
-        	<div id="piechart_3d29"></div>
-        	<div id="piechart_3d30"></div>
+        <div id="visualizations">
+      		';
+      		echo '<h3 style="text-align:center"> Course Components </h3>
+      		<div id="piechart_3d" style = "width: 600px; height: 200px; margin: 0 auto"></div>
+      		<br>';
+        	$n=0;
+        	while($n < $chapters_count)
+        	{
+        		echo '<div>
+        		<h3 style="text-align:center"> Chapter '; echo $n+1; echo' </h3>
+        		<div id="piechart_3d'; echo $n; echo '" style = "width: 700px; height: 200px; margin: 0 auto"></div>';
+        		
 
-        </div>
+        		if($result_array_videos_count[$n] > 0)
+        		{
+        			echo'
+         			<div id = "container'; echo $n; echo '" style = "width: 700px; height: 200px; margin: 0 auto"> </div>';
+         		}
+         		if($result_array_htmls_count[$n] > 0)
+         		{
+         		echo'
+         		<div id = "container-pdf'; echo $n; echo '" style = "width: 700px; height: 200px; margin: 0 auto"> </div>';
+         		}
+         		echo'
+         		</div>
+         		<br>
+         		<br>';		
+        		$n++;
+        	}
 
-        </div>
-      </div><!-- tab-content -->
+        	echo '	
+        </div> <!-- id="visualization" -->	
 			';
 
 			
@@ -392,7 +441,7 @@
         ]);
 
         var options = {
-          title: \'Chapter '.$n.' Components\',
+          title: \'Chapter '; echo $n + 1; echo' Components\',
           is3D: true,
         };
 
@@ -402,6 +451,62 @@
     </script>
  	';
  }
+
+for($n = 0; $n <= $chapters_count; $n++)
+{
+
+ echo '
+  <script language = "JavaScript">
+         function drawChart() {
+            // Define the chart to be drawn.
+            var data = google.visualization.arrayToDataTable([
+               [\'Chapter\', \'Length (secs)\'],';
+               $m=0;
+               while($m < sizeof($array_multi_video_lengths[$n]) - 1)
+               	{
+               		echo '
+               		[\''; echo $array_multi_video_names[$n][$m]; echo'\', '.$array_multi_video_lengths[$n][$m].'],';
+               		$m++;
+            	}
+            	echo '[\''; echo $array_multi_video_names[$n][$m]; echo'\', '.$array_multi_video_lengths[$n][$m].']';
+        	echo ']);
+
+            var options = {title: \'Video Lengths (in seconds) in Chapter '; echo $n+1; echo ' \'}; 
+
+            // Instantiate and draw the chart.
+            var chart = new google.visualization.ColumnChart(document.getElementById(\'container'; echo $n; echo'\'));
+            chart.draw(data, options);
+         }
+         google.charts.setOnLoadCallback(drawChart);
+      </script>
+      ';
+
+       echo '
+  <script language = "JavaScript">
+         function drawChart() {
+            // Define the chart to be drawn.
+            var data = google.visualization.arrayToDataTable([
+               [\'Chapter\', \'PDF Pages\'],';
+               $m=0;
+               while($m < sizeof($array_multi_html_names[$n]) - 1)
+               	{
+               		echo '
+               		[\''; echo $array_multi_html_names[$n][$m]; echo'\', '.$array_multi_pdf_pages[$n][$m].'],';
+               		$m++;
+            	}
+            	echo '[\''; echo $array_multi_html_names[$n][$m]; echo'\', '.$array_multi_pdf_pages[$n][$m].']';
+        	echo ']);
+
+            var options = {title: \'PDF Pages per HTML Component in Chapter '; echo $n+1; echo ' \'}; 
+
+            // Instantiate and draw the chart.
+            var chart = new google.visualization.ColumnChart(document.getElementById(\'container-pdf'; echo $n; echo'\'));
+            chart.draw(data, options);
+         }
+         google.charts.setOnLoadCallback(drawChart);
+      </script>
+      ';
+  }
  ?>
  	
 
