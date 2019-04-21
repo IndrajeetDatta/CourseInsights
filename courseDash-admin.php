@@ -1,12 +1,19 @@
 <?php
 	session_start();
 	require 'db.php';
+  if ( $_SESSION['logged_in'] != 1 ) 
+  {
+    $_SESSION['message'] = "You must log in before viewing your course dashboard page!";
+    header("location: error.php");    
+  }
 
-    if ( $_SESSION['logged_in'] != 1 ) 
-    {
-      $_SESSION['message'] = "You must log in before viewing your course dashboard page!";
-      header("location: error.php");    
-    }
+    $viewFirstName=$_SESSION['viewfirst_name'];
+    $viewLastName=$_SESSION['viewlast_name'];
+    $viewEmail=$_SESSION['viewemail'];
+    $viewInstitution=$_SESSION['viewinstitution'];
+    $viewTitle=$_SESSION['viewtitle'];
+    $viewIsAdmin=$_SESSION['viewIsAdmin'];
+
     $user_id = $_SESSION['user_id'];
     $first_name = $_SESSION['first_name'];
     $last_name = $_SESSION['last_name'];
@@ -21,22 +28,10 @@
     {
     	$courseID = $_POST['courseID'];
     	$_SESSION['course_id'] = $courseID;
-      $_SESSION['isAdminCourse'] = 0;
-      $isAdminCourse = $_SESSION['isAdminCourse'];
-
-    }
-    if(isset($_POST['adminCourseID']) && !empty($_POST['adminCourseID']))
-    {
-      $courseID = $_POST['adminCourseID'];
-      $_SESSION['course_id'] = $courseID;
-      $_SESSION['isAdminCourse'] = 1;
-      $isAdminCourse = $_SESSION['isAdminCourse'];
-
     }
     else
     {
     	$courseID = $_SESSION['course_id'];
-      $isAdminCourse = $_SESSION['isAdminCourse'];
     }
 		$result = $mysqli->query("SELECT * FROM courses WHERE course_id='$courseID'");
 		$course = $result->fetch_assoc();
@@ -56,25 +51,20 @@
 </head>
 <body>
  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href=<?php if($isAdmin==1){echo'"adminProfile.php"';} else{echo'"profile.php"';}?> >Course Insights</a>
+  <a class="navbar-brand" href="profile.php">Course Insights</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   </div>
   <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
         <ul class="navbar-nav ml-auto">
-        	<form>
-            	<li class="nav-item">
-                <a class="nav-link" href="editCourse.php"> Edit Course </a>
-           	 </li> 
-            </form>
             <form>
             	<li class="nav-item">
                 <a class="nav-link" href="deleteCourse.php"> Delete Course </a>
            	 </li> 
             </form>
             <li class="nav-item">
-                <a class="nav-link" href=<?php if($isAdmin==1){echo'"adminProfile.php"';}else{echo'"profile.php"';} ?>> <?php echo $first_name.' '.$last_name; if($isAdmin==1){echo' (admin)';}?> </a>
+                <a class="nav-link" href="#"> <?php echo $first_name.' '.$last_name.' (admin)' ?> </a>
             </li>
             
             <li class="nav-item">
@@ -89,37 +79,16 @@
 	$isCourseUpdated = $course['isUpdated'];
 	$courseName = $course['course_name'];
 ?>
+<div class="jumbotron">
 <h1 style="color: black"> <?php echo $courseName ?> </h1>
 	<?php 
-		if($_SESSION['isCourseUpdated'] == 0)
-		{
-			echo ' 
-			<div class="jumbotron">
-			<h3 align="center"> You have not updated your course. Please update your course to see the visualization </h3>
-   			<div class="form">	
-   			 <form method="post" action="uploadcsv.php" enctype="multipart/form-data">
-            <h3 align="center"> Chapters Table </h3>
-            <input type="file" name="csv_chapters"/>
-            <br /><br>
-            <h3 align="center"> Videos Table </h3>
-            <input type="file" name="csv_videos" />
-            <br /><br>
-            <h3 align="center"> Problems Table </h3>
-            <input type="file" name="csv_problems" />
-            <br /><br>
-            <h3 align="center"> Discussions Table </h3>
-            <input type="file" name="csv_discussions" />
-            <br /><br>
-            <h3 align="center"> HTMLs Table </h3>
-            <input type="file" name="csv_htmls" />
-            <br />
-            <div>
-              <input type="submit" name="upload" class="button button-block" value="Upload" />
-              </form>
-            </div>
-    	</div>';
-
-		}
+		
+    if($_SESSION['isCourseUpdated'] == 0)
+    {
+      echo ' <h3 style="color: black"> This course has not been updated by the user </h3>
+      </div>
+      ';
+    }
 		else if($_SESSION['isCourseUpdated'] == 1)
 		{
 			    
@@ -243,6 +212,33 @@
 				array_push($array_multi_html_names, $tmparray_html_names);
 				array_push($array_multi_pdf_pages, $tmparray_pdf_pages);
 			}
+			//echo "Size of Average Video Length Array: ".sizeof($array_video_lengths_average)." ";
+			// echo "Size of Video Lengths Array: ".sizeof($array_multi_video_lengths);
+			// echo "Size of PDF Pages Array: ".sizeof($array_multi_pdf_pages);
+			// echo "Videos: ";
+			// for($n = 0; $n < sizeof($result_array_videos_count); $n++)
+			// {
+			// 	echo $result_array_videos_count[$n];
+			// 	echo "|";
+			// }
+			// echo "Problems: ";
+			// for($n = 0; $n < sizeof($result_array_problems_count); $n++)
+			// {
+			// 	echo $result_array_problems_count[$n];
+			// 	echo "|";
+			// }
+			// echo "Discussions: ";
+			// for($n = 0; $n < sizeof($result_array_discussions_count); $n++)
+			// {
+			// 	echo $result_array_discussions_count[$n];
+			// 	echo "|";
+			// }
+			// echo "HTMLs: ";
+			// for($n = 0; $n < sizeof($result_array_htmls_count); $n++)
+			// {
+			// 	echo $result_array_htmls_count[$n];
+			// 	echo "|";
+			// }
 			echo ' 
 			<div class="jumbotron">
 			<div class="form2">

@@ -6,7 +6,8 @@ if ( $_SESSION['logged_in'] != 1 )
   $_SESSION['message'] = "You must log in before viewing your profile page!";
   header("location: error.php");    
 }
-
+    
+  
     $user_id = $_SESSION['user_id'];
     $first_name = $_SESSION['first_name'];
     $last_name = $_SESSION['last_name'];
@@ -17,6 +18,7 @@ if ( $_SESSION['logged_in'] != 1 )
     $bio = $_SESSION['bio'];
     $isAdmin = $_SESSION['isAdmin'];
 
+
 if(isset($_POST["upload"]))
 {
   if(isset($_POST['courseName']) && isset($_POST['courseNumber']))
@@ -26,11 +28,13 @@ if(isset($_POST["upload"]))
     $courseNumber = $_POST['courseNumber'];
 
     $sql_courses = "INSERT INTO courses"."(course_name, course_number, user_id) "."VALUES('$courseName', '$courseNumber', '$user_id');";
+    
     $mysqli->query($sql_courses);
-       
+        
   }
 
 } 
+
   
     $userID = $mysqli->escape_string($user_id);
     $query_selectCourses = "SELECT * FROM courses WHERE user_id='$userID'";
@@ -57,13 +61,20 @@ if(isset($_POST["upload"]))
 
   <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
         <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="profile.php"> <?php echo $first_name.' '.$last_name ?> </a>
+        	<li class="nav-item">
+                <a class="nav-link" href="viewUsers-admin.php"> View Users </a>
+            </li>
+            
+              <li class="nav-item">
+                <a class="nav-link" href="resignAdmin.php"> Resign as Admin </a>
+            </li> 
             </li>
               <li class="nav-item">
                 <a class="nav-link" href="deleteAccount.php"> Delete Account </a>
             </li>
-            
+            <li class="nav-item">
+                <a class="nav-link" href="adminProfile.php"> <?php echo $first_name.' '.$last_name.' (admin)'; ?> </a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link" href="logout.php"> Logout </a>
             </li>
@@ -72,7 +83,8 @@ if(isset($_POST["upload"]))
 </nav>
 <div class="jumbotron">
    <div class="form">
-          <h1 align="center">Welcome <?= $first_name.' '.$last_name.'!' ?></h1>
+          <h1 align="center">Welcome <?= $first_name.' '.$last_name.' (admin)!' ?></h1>
+
           <h3 align="left">Job Title: <?= $title ?> </h3>
           <h3 align="left">Institution: <?= $institution ?> </h3>
           <h3 align="left">Bio: <?= $bio ?></h3>
@@ -81,8 +93,6 @@ if(isset($_POST["upload"]))
 
           <form method="post" enctype='multipart/form-data'>
             <h3 align="center"> Upload a new course for visualization! </h3>
-            <!-- <p align="center"> Please Select Files(Only CSV Format)</label> </p> -->
-
             <div>            
               <h3 align="center"> Course Name </h3>
               <input type="text" name="courseName">
@@ -115,7 +125,7 @@ if(isset($_POST["upload"]))
           <tr>
           <td>'.$row["course_name"].'</td>
           <td>'.$row["course_number"].'</td>
-          <td><button type="submit" name="courseID" value='.$row["course_id"].'> Go to course page </td>
+          <td><button type="submit" name="adminCourseID" value='.$row["course_id"].'> Go to course page </td>
           </tr>
           ';
         }

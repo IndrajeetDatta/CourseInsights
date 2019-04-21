@@ -1,41 +1,54 @@
 <?php
+/* Displays user information and some useful messages */
 session_start();
 require 'db.php';
+// Check if user is logged in using the session variable
 if ( $_SESSION['logged_in'] != 1 ) 
 {
   $_SESSION['message'] = "You must log in before viewing your profile page!";
   header("location: error.php");    
 }
-
-    $user_id = $_SESSION['user_id'];
-    $first_name = $_SESSION['first_name'];
-    $last_name = $_SESSION['last_name'];
-    $email = $_SESSION['email'];
-    $active = $_SESSION['active'];
-    $title = $_SESSION['title'];
-    $institution = $_SESSION['institution'];
-    $bio = $_SESSION['bio'];
-    $isAdmin = $_SESSION['isAdmin'];
-
-if(isset($_POST["upload"]))
+if(isset($_POST['submit']))
 {
-  if(isset($_POST['courseName']) && isset($_POST['courseNumber']))
-  {
-    $courseName = $_POST['courseName'];
+  $viewUserID = $_POST['submit'];
+  $_SESSION['viewUserID'] = $viewUserID;
+}
+else
+{
+  $viewUserID = $_SESSION['viewUserID'];
+}
 
-    $courseNumber = $_POST['courseNumber'];
+$result_user = $mysqli->query("SELECT * FROM user WHERE user_id = '$viewUserID'");
+$viewUser = $result_user->fetch_assoc();
+$_SESSION['viewuser_id'] = $viewUser['user_id'];
+$_SESSION['viewemail'] = $viewUser['email'];
+$_SESSION['viewfirst_name'] = $viewUser['f_name'];
+$_SESSION['viewlast_name'] = $viewUser['l_name'];
+$_SESSION['viewinstitution'] = $viewUser['institution'];
+$_SESSION['viewtitle'] = $viewUser['title'];
+$_SESSION['viewIsAdmin'] = $viewUser['isAdmin'];
 
-    $sql_courses = "INSERT INTO courses"."(course_name, course_number, user_id) "."VALUES('$courseName', '$courseNumber', '$user_id');";
-    $mysqli->query($sql_courses);
-       
-  }
+$query_selectCourses = "SELECT * FROM courses WHERE user_id='$viewUserID'";
+$result_viewCourses = $mysqli->query($query_selectCourses);
 
-} 
-  
-    $userID = $mysqli->escape_string($user_id);
-    $query_selectCourses = "SELECT * FROM courses WHERE user_id='$userID'";
+$viewFirstName=$_SESSION['viewfirst_name'];
+$viewLastName=$_SESSION['viewlast_name'];
+$viewEmail=$_SESSION['viewemail'];
+$viewInstitution=$_SESSION['viewinstitution'];
+$viewTitle=$_SESSION['viewtitle'];
+$viewIsAdmin=$_SESSION['viewIsAdmin'];
 
-    $result = $mysqli->query($query_selectCourses);
+$user_id = $_SESSION['user_id'];
+$first_name = $_SESSION['first_name'];
+$last_name = $_SESSION['last_name'];
+$email = $_SESSION['email'];
+$active = $_SESSION['active'];
+$title = $_SESSION['title'];
+$institution = $_SESSION['institution'];
+$bio = $_SESSION['bio'];
+$isAdmin = $_SESSION['isAdmin'];
+
+     
 ?>
 
 <!DOCTYPE html>
@@ -57,13 +70,27 @@ if(isset($_POST["upload"]))
 
   <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
         <ul class="navbar-nav ml-auto">
+          <?php 
+            if($viewIsAdmin == 0)
+            {
+              echo '
             <li class="nav-item">
-                <a class="nav-link" href="profile.php"> <?php echo $first_name.' '.$last_name ?> </a>
-            </li>
+                <a class="nav-link" href="addAdmin.php"> Make Admin </a>
+            </li>';
+            }
+            ?>
+            <?php 
+            if($viewIsAdmin == 0)
+            {
+              echo '
               <li class="nav-item">
-                <a class="nav-link" href="deleteAccount.php"> Delete Account </a>
+                 <a class="nav-link" href="deleteUser.php"> Delete User </a>
+              </li>';
+            }
+            ?>
+            <li class="nav-item">
+                <a class="nav-link" href="adminProfile.php"> <?php echo $first_name.' '.$last_name.' (admin)' ?> </a>
             </li>
-            
             <li class="nav-item">
                 <a class="nav-link" href="logout.php"> Logout </a>
             </li>
@@ -71,36 +98,13 @@ if(isset($_POST["upload"]))
     </div>
 </nav>
 <div class="jumbotron">
-   <div class="form">
-          <h1 align="center">Welcome <?= $first_name.' '.$last_name.'!' ?></h1>
-          <h3 align="left">Job Title: <?= $title ?> </h3>
-          <h3 align="left">Institution: <?= $institution ?> </h3>
-          <h3 align="left">Bio: <?= $bio ?></h3>
-          <br>
-          <br>
-
-          <form method="post" enctype='multipart/form-data'>
-            <h3 align="center"> Upload a new course for visualization! </h3>
-            <!-- <p align="center"> Please Select Files(Only CSV Format)</label> </p> -->
-
-            <div>            
-              <h3 align="center"> Course Name </h3>
-              <input type="text" name="courseName">
-            </div>
-            <div>            
-              <h3 align="center"> Course Number </h3>
-              <input type="text" name="courseNumber">
-            </div>
-            <br>
-            <div>
-              <input type="submit" name="upload" class="button button-block" value="Upload" />
-            </div>
-          </form>
-    </div>
-    
-    <h3 align="center"> Your Courses </h3>
+  <h3>User name: <?php echo $viewFirstName." ".$viewLastName; if($viewIsAdmin==1){echo ' (admin)';}?> </h3>
+  <h3>Email: <?php echo $viewEmail ?></h3>
+  <h3>Institute: <?php echo $viewInstitution ?> </h3>
+  <h3>Title: <?php echo $viewTitle ?></h3>
+    <h3 align="center"> User Courses </h3>
    <br />
-    <form method="post" action="courseDash.php">
+    <form method="post" action="courseDash-admin.php">
        <div class="table-responsive">
     <table class="table table-bordered table-striped">
      <tr>
@@ -109,7 +113,7 @@ if(isset($_POST["upload"]))
       <th></th>
      </tr>
       <?php
-        while($row = mysqli_fetch_array($result))
+        while($row = mysqli_fetch_array($result_viewCourses))
         {
           echo '
           <tr>

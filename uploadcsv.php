@@ -1,7 +1,11 @@
 <?php
   session_start();
   require 'db.php';
-
+  if ( $_SESSION['logged_in'] != 1 ) 
+  {
+    $_SESSION['message'] = "You must log in before viewing this page";
+    header("location: error.php");    
+  }
     $user_id = $_SESSION['user_id'];
     $first_name = $_SESSION['first_name'];
     $last_name = $_SESSION['last_name'];
@@ -145,6 +149,9 @@
         $updateQuery = "UPDATE courses SET isUpdated='1' WHERE course_id='$courseID';";
         $mysqli->query($updateQuery);       
       }    
+      $_SESSION['course_id'] = $courseID;
+      $_SESSION['isCourseUpdated'] = 1;
+
       header("location: courseDash.php"); 
   }
   // if(isset($_GET["updation"]))

@@ -21,10 +21,18 @@ else { // User exists
         $_SESSION['institution'] = $user['institution'];
         $_SESSION['title'] = $user['title'];
         $_SESSION['bio'] = $user['bio'];
+        $_SESSION['isAdmin'] = $user['isAdmin'];
         // This is how we'll know the user is logged in
         $_SESSION['logged_in'] = true;
 
-        header("location: profile.php");
+        if($_SESSION['isAdmin'] == 1)
+        {
+            header("location: adminProfile.php");
+        }
+        else
+        {
+            header("location: profile.php");
+        }
     }
     else {
         $_SESSION['message'] = "You have entered wrong password, try again!";
